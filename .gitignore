@@ -1,0 +1,7 @@
+.vs
+_specs
+_data
+node_modules
+bin
+obj
+dist
