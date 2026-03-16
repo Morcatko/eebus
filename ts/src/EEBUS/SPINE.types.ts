@@ -31,7 +31,7 @@ export type Datagram<TPayload = Payload> = {
         "addressDestination": DatagramAddress,
         "msgCounter": number,
         "msgCounterReference"?: number,
-        "cmdClassifier": "read" | "reply" | "call" | "result" | "notify",
+        "cmdClassifier": "read" | "reply" | "call" | "result" | "notify" | "write",
         "ackRequest"?: boolean
     },
     "payload": {
@@ -44,8 +44,15 @@ export type Datagram<TPayload = Payload> = {
 export type Payload =
     NodeManagementDetailedDiscoveryData
     | DeviceClassificationManufacturerData
+    | DeviceClassificationUserData
     | ResultData
-    | NodeManagementSubscriptionRequestCall;
+    | NodeManagementSubscriptionRequestCall
+    | SetPointListData;
+
+export type TValue = {
+    "number": number,
+    "scale"?: number
+};
 
 export type ResultData = {
     "resultData": {
@@ -160,3 +167,19 @@ export type DeviceClassificationManufacturerData = {
         "brandName": string
     }
 }
+
+export type DeviceClassificationUserData = {
+    "deviceClassificationUserData": {
+        "userLabel": string
+    }
+}
+
+export type SetPointListData = {
+    "setpointListData": {
+        "setpointData":
+        {
+            "setpointId": number,
+            "value": TValue
+        }[]
+    }
+};

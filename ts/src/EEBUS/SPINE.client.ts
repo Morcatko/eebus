@@ -95,6 +95,20 @@ export class SPINEClient {
         return msgCounter;
     }
 
+    public async sendWriteCmd(
+        entity: number[],
+        feature: number,
+        payload: SPINE.Payload) {
+            const msgId = this.sendPayload("write", entity, feature, payload);
+
+            //Set some timeout
+        return new Promise<any>((resolve, reject) => {
+            this.readReplyMap.set(msgId, (response) => {
+                resolve(response.data.payload.datagram.payload.cmd[0]);
+            });
+        });
+        }
+
     private async sendReadCmd<TResponse>(
         entity: number[],
         feature: number,

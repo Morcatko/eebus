@@ -38,8 +38,23 @@ const readData = async () => {
 
         await delay(1000);
 
-        const dd = await sh.detailedDiscoveryData();
+        //const dd = await sh.detailedDiscoveryData();
         //await sh.readAndSaveAll(dd);
+
+        const result = await spine.sendWriteCmd([5, 1, 1], 18, {
+            "setpointListData": {
+                "setpointData": [
+                    {
+                        "setpointId": 1,
+                        "value": {
+                            "number": 24
+                        }
+                    }
+                ]
+            }
+        });
+
+        console.log("result", result);
 
         //await sh.useCaseData();
 
