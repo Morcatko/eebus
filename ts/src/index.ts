@@ -40,6 +40,7 @@ const main = async () => {
         await eebus.init();
         await ship.init();
         await spine.init();
+        
         await ha.init();
 
         await delay(1000);

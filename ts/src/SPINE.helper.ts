@@ -53,7 +53,6 @@ export class SPINEHelper {
         onValue: (value: number) => void) {
 
         const processData = (p: SPINE.MeasurementListData) => {
-            console.log(`${entity.join(", ")}, ${feature}: `, JSON.stringify(p));
             const value = p
                 .measurementListData
                 .measurementData
@@ -61,8 +60,6 @@ export class SPINEHelper {
                 .value;
 
             const numericValue = value.number * Math.pow(10, value.scale ?? 0);
-
-            console.log(`${entity.join(", ")}, ${feature}: `, numericValue);
             onValue(numericValue);
         }
 
