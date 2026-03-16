@@ -95,26 +95,26 @@ export class SPINEClient {
         return msgCounter;
     }
 
-    private async sendReadCmd<TResponse>(
+    private async sendReadCmd<TPayload = SPINE.Payload>(
         entity: number[],
         feature: number,
         payload: SPINE.Payload) {
         const msgId = this.sendPayload("read", entity, feature, payload);
 
         //Set some timeout
-        return new Promise<TResponse>((resolve, reject) => {
+        return new Promise<TPayload>((resolve, reject) => {
             this.readReplyMap.set(msgId, (response) => {
-                resolve(response.data.payload.datagram.payload.cmd[0] as TResponse);
+                resolve(response.data.payload.datagram.payload.cmd[0] as TPayload);
             });
         });
     }
 
-    public async readFunction<TResponse>(entity: number[], feature: number, readFunction: string) {
+    public async readFunction<TPayload = SPINE.Payload>(entity: number[], feature: number, readFunction: string) {
         const _payload = {
             [readFunction]: []
         };
 
-        return await this.sendReadCmd<TResponse>(entity, feature, _payload as any as SPINE.Payload);
+        return await this.sendReadCmd<TPayload>(entity, feature, _payload as any as SPINE.Payload);
     }
 
     private async sendCallCmd(entity: number[], feature: number, payload: SPINE.Payload) {

@@ -42,10 +42,19 @@ export type Datagram<TPayload = Payload> = {
 }
 
 export type Payload =
-    NodeManagementDetailedDiscoveryData
+    ResultData
+    | NodeManagementDetailedDiscoveryData
+    | NodeManagementSubscriptionRequestCall
     | DeviceClassificationManufacturerData
-    | ResultData
-    | NodeManagementSubscriptionRequestCall;
+    | DeviceClassificationUserData
+    | MeasurementListData
+    | SetPointListData;
+    ;
+
+export type TValue = {
+    "number": number,
+    "scale"?: number
+};
 
 export type ResultData = {
     "resultData": {
@@ -160,3 +169,31 @@ export type DeviceClassificationManufacturerData = {
         "brandName": string
     }
 }
+
+export type DeviceClassificationUserData = {
+    "deviceClassificationUserData": {
+        "userLabel": string
+    }
+}
+
+export type MeasurementListData = {
+    "measurementListData": {
+        "measurementData": {
+            "measurementId": number,
+            "valueType": string;
+            "value": TValue;
+            "valueSource": string;
+            "valueState": string;
+        }[]
+    }
+}
+
+export type SetPointListData = {
+    "setpointListData": {
+        "setpointData":
+        {
+            "setpointId": number,
+            "value": TValue
+        }[]
+    }
+};
