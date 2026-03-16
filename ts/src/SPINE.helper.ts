@@ -46,6 +46,32 @@ export class SPINEHelper {
         }
     }
 
+    public async readAndSubscribeMeasurement(
+        entity: number[],
+        feature: number,
+        measurementId: number,
+        onValue: (value: number) => void) {
+
+        const processData = (p: SPINE.MeasurementListData) => {
+            console.log(`${entity.join(", ")}, ${feature}: `, JSON.stringify(p));
+            const value = p
+                .measurementListData
+                .measurementData
+                .find(m => m.measurementId === measurementId)
+                .value;
+
+            const numericValue = value.number * Math.pow(10, value.scale ?? 0);
+
+            console.log(`${entity.join(", ")}, ${feature}: `, numericValue);
+            onValue(numericValue);
+        }
+
+        
+        const result = await this.spine.readFunction<SPINE.MeasurementListData>(entity, feature, "measurementListData");
+        processData(result);
+        await this.spine.subscribe(entity, feature, processData);
+    }
+
     public async detailedDiscoveryData() {
         const reply = await this.readAndSave<SPINE.NodeManagementDetailedDiscoveryData>([0], 0, "nodeManagementDetailedDiscoveryData");
         const dd = reply.nodeManagementDetailedDiscoveryData;
@@ -78,7 +104,7 @@ export class SPINEHelper {
         for (const fi of detailedDiscovery.featureInformation) {
             if (fi.description.role === "client")
                 continue;
-            
+
             for (const f of fi.description.supportedFunction) {
                 if (f.possibleOperations["read"] !== undefined) {
                     await this.readAndSave(

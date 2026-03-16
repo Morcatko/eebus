@@ -1,10 +1,13 @@
 import * as path from 'path';
+
 import { mDNS } from './mDNS/mdns';
 import { EEBUSClient } from './EEBUS/EEBUS.client';
 import { SHIPClient } from './EEBUS/SHIP.client';
 import { SPINEClient } from './EEBUS/SPINE.client';
 import { SPINEHelper } from './SPINE.helper';
+import { HAClient } from './HA/HA.client';
 
+const mqtt_ip = "192.168.0.15";
 const target_IP = "192.168.0.68";
 const target_PORT = 12480;
 
@@ -18,6 +21,7 @@ const eebus = new EEBUSClient(target_IP, target_PORT, cert_Path);
 const ship = new SHIPClient(eebus, cert_SN);
 const spine = new SPINEClient(eebus);
 const sh = new SPINEHelper(spine);
+const ha = new HAClient(mqtt_ip);
 
 const delay = (timeMs: number) => new Promise(resolve => setTimeout(resolve, timeMs));
 
@@ -29,16 +33,55 @@ const mdns = async () => {
     await delay(120_000);
 }
 
-const readData = async () => {
+const main = async () => {
     try {
         await eebus.connect();
         await eebus.init();
         await ship.init();
         await spine.init();
+        await ha.init();
 
         await delay(1000);
 
-        const dd = await sh.detailedDiscoveryData();
+        const sub = async (
+            entity: number[],
+            feature: number,
+            measuementId: number,
+            sensorProps: Parameters<typeof ha.createNumericSensor>[0]) => {
+
+            const sensor = ha.createNumericSensor(sensorProps);
+
+            sh.readAndSubscribeMeasurement(entity, feature, measuementId, (value) => {
+                console.log(`${entity.join(", ")}, ${feature}: `, 1*value);
+                sensor.updateState(1*value);
+            });
+        }
+
+        const device = ha.getDevice();
+
+        await sub([4], 11, 0, {
+            device: device,
+            name: "DHW temp",
+            uniqueId: "xx-dhw-temp",
+            deviceClass: "temperature",
+            unitOfMeasurement: "°C"
+        });
+        await sub([6], 11, 0, {
+            device: device,
+            name: "Outside temp",
+            uniqueId: "xx-outside-temp",
+            deviceClass: "temperature",
+            unitOfMeasurement: "°C"
+        });
+        await sub([3, 1], 11, 9, {
+            device: device,
+            name: "Power",
+            uniqueId: "xx-power",
+            deviceClass: "power",
+            unitOfMeasurement: "W"
+        });
+
+        //const dd = await sh.detailedDiscoveryData();
         //await sh.readAndSaveAll(dd);
 
         //await sh.useCaseData();
@@ -96,6 +139,5 @@ const readData = async () => {
     }
 }
 
-
 //mdns();
-readData();
+main();

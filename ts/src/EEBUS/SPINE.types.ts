@@ -45,8 +45,14 @@ export type Payload =
     NodeManagementDetailedDiscoveryData
     | DeviceClassificationManufacturerData
     | ResultData
-    | NodeManagementSubscriptionRequestCall;
+    | NodeManagementSubscriptionRequestCall
+    | MeasurementListData
+    ;
 
+export type TValue = {
+    "number": number,
+    "scale"?: number
+};
 export type ResultData = {
     "resultData": {
         "errorNumber": number
@@ -158,5 +164,16 @@ export type DeviceClassificationManufacturerData = {
     "deviceClassificationManufacturerData": {
         "vendorName": string,
         "brandName": string
+    }
+}
+export type MeasurementListData = {
+    "measurementListData": {
+        "measurementData": {
+            "measurementId": number,
+            "valueType": string;
+            "value": TValue;
+            "valueSource": string;
+            "valueState": string;
+        }[]
     }
 }
