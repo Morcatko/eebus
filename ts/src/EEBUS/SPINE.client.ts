@@ -109,7 +109,7 @@ export class SPINEClient {
         });
         }
 
-    private async sendReadCmd<TResponse>(
+    private async sendReadCmd<TResponse = SPINE.Payload>(
         entity: number[],
         feature: number,
         payload: SPINE.Payload) {
@@ -123,7 +123,7 @@ export class SPINEClient {
         });
     }
 
-    public async readFunction<TResponse>(entity: number[], feature: number, readFunction: string) {
+    public async readFunction<TResponse = SPINE.Payload>(entity: number[], feature: number, readFunction: string) {
         const _payload = {
             [readFunction]: []
         };

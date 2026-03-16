@@ -29,7 +29,7 @@ const mdns = async () => {
     await delay(120_000);
 }
 
-const readData = async () => {
+const main = async () => {
     try {
         await eebus.connect();
         await eebus.init();
@@ -113,4 +113,4 @@ const readData = async () => {
 
 
 //mdns();
-readData();
+main();
