@@ -78,22 +78,6 @@ const main = async () => {
             id: "vaillant-eebus-4"
         });*/
 
-
-        const sensor_4_11DHW_temp = await device_Vaillant_0.createNumericSensor(
-        {
-            name: "DHW temp",
-            uniqueIdSuffix: "dhw-temp",
-            deviceClass: "temperature",
-            unitOfMeasurement: "°C"
-        });
-
-        const sensor_6_11_Outside_temp = await device_Vaillant_0.createNumericSensor({
-            name: "Outside temp",
-            uniqueIdSuffix: "outside-temp",
-            deviceClass: "temperature",
-            unitOfMeasurement: "°C"
-        })
-
         const sensor_3_11_HeatPump_power = await device_Vaillant_0.createNumericSensor({
             name: "HeatPump power",
             uniqueIdSuffix: "heatpump-power",
@@ -108,10 +92,32 @@ const main = async () => {
             unitOfMeasurement: "W"
         });
 
+        const sensor_4_11DHW_temp = await device_Vaillant_0.createNumericSensor(
+        {
+            name: "DHW temp",
+            uniqueIdSuffix: "dhw-temp",
+            deviceClass: "temperature",
+            unitOfMeasurement: "°C"
+        });
+
+        const sensor_5_1_1_Room_temp = await device_Vaillant_0.createNumericSensor({
+            name: "Room temp",
+            uniqueIdSuffix: "room-temp",
+            deviceClass: "temperature",
+            unitOfMeasurement: "°C"
+        });
+
+        const sensor_6_11_Outside_temp = await device_Vaillant_0.createNumericSensor({
+            name: "Outside temp",
+            uniqueIdSuffix: "outside-temp",
+            deviceClass: "temperature",
+            unitOfMeasurement: "°C"
+        })
 
         await sub([3], 11, 0, sensor_3_11_HeatPump_power);
         await sub([3, 1], 11, 9, sensor_3_1_11_Compressor_power);
         await sub([4], 11, 0, sensor_4_11DHW_temp);
+        await sub([5, 1, 1], 11, 0, sensor_5_1_1_Room_temp);
         await sub([6], 11, 0, sensor_6_11_Outside_temp);
 
         //const dd = await sh.detailedDiscoveryData();
