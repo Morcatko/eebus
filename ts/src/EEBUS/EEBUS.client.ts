@@ -1,5 +1,5 @@
+import { Agent, type AgentOptions } from 'node:https';
 import * as ws from 'ws';
-import * as fs from 'fs';
 import * as EEBUS from './EEBUS.types';
 import { untransformObject } from './utils/json-transformer';
 import { logIn } from './utils/log';
@@ -18,17 +18,15 @@ export class EEBUSClient implements IEEBUSClient {
   constructor(
     private readonly targetIp: string,
     private readonly port: number,
-    private readonly pfxCertPath: string
+    private readonly agentOptions: AgentOptions
   ) { }
 
   public async connect() {
-    const pfx = fs.readFileSync(this.pfxCertPath);
+    const agent = new Agent(this.agentOptions);
 
     // In a real EEBUS impl, you must use a TLS certificate and verify the remote SKI
     this.ws = new ws.WebSocket(`wss://${this.targetIp}:${this.port}`, "ship", {
-      pfx: pfx,
-      passphrase: '',
-      rejectUnauthorized: false, // For local dev/testing only!
+      agent: agent
     });
 
     //this.ws.addEventListener('message', (data: ws.MessageEvent) => this.handleMessage(data));
