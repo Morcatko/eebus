@@ -14,11 +14,11 @@ const cert_FileName = "EEBUS-Client.pfx";
 const cert_SKI = "584101c651d4f960be0be2b200d8b66e1fbca3d2"
 
 const eebus = new EEBUSClient(target_IP, target_PORT, {
-      pfx: fs.readFileSync(path.resolve(__dirname, cert_FileName)),
-      //passphrase: '',
-      rejectUnauthorized: false, // For local dev/testing only!
-    });
-    
+    pfx: fs.readFileSync(path.resolve(__dirname, cert_FileName)),
+    //passphrase: '',
+    rejectUnauthorized: false, // For local dev/testing only!
+});
+
 const ship = new SHIPClient(eebus, cert_SN);
 const spine = new SPINEClient(eebus);
 const sh = new SPINEHelper(spine);
@@ -45,20 +45,22 @@ const main = async () => {
         //const dd = await sh.detailedDiscoveryData();
         //await sh.readAndSaveAll(dd);
 
-        const result = await spine.sendWriteCmd([5, 1, 1], 18, {
-            "setpointListData": {
-                "setpointData": [
-                    {
-                        "setpointId": 1,
-                        "value": {
-                            "number": 24
+        const writeRoomTemp = async () => {
+            const result = await spine.sendWriteCmd([5, 1, 1], 18, {
+                "setpointListData": {
+                    "setpointData": [
+                        {
+                            "setpointId": 1,
+                            "value": {
+                                "number": 24
+                            }
                         }
-                    }
-                ]
-            }
-        });
+                    ]
+                }
+            });
 
-        console.log("result", result);
+            console.log("result", result);
+        }
 
         //await sh.useCaseData();
 
