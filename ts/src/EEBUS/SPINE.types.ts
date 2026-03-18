@@ -31,7 +31,7 @@ export type Datagram<TPayload = Payload> = {
         "addressDestination": DatagramAddress,
         "msgCounter": number,
         "msgCounterReference"?: number,
-        "cmdClassifier": "read" | "reply" | "call" | "result" | "notify",
+        "cmdClassifier": "read" | "reply" | "call" | "result" | "notify" | "write",
         "ackRequest"?: boolean
     },
     "payload": {
