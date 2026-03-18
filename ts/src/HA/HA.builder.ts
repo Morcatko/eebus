@@ -40,4 +40,21 @@ export class HADevice {
 
         return new HA.Sensor(this.manager, info);
     }
+
+    public createNumber(props: {
+        name: string,
+        uniqueIdSuffix: string
+    }) {
+        const info = HA.NumberInfo.create({
+            device: this.device,
+            name: props.name,
+            uniqueId: this.device.identifiers[0] + "-" + props.uniqueIdSuffix,
+            min: 0,
+            max: 1000000,
+            step: 0.5,
+        });
+
+        return new HA.Number(info, this.manager);
+    }
+
 }

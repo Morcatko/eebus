@@ -6,7 +6,7 @@ import { SHIPClient } from './EEBUS/SHIP.client';
 import { SPINEClient } from './EEBUS/SPINE.client';
 import { SPINEHelper } from './SPINE.helper';
 import { HAClient } from './HA/HA.client';
-import { Sensor } from '@ginden/ha-mqtt-discoverable';
+import { Number, Sensor } from '@ginden/ha-mqtt-discoverable';
 
 const mqtt_ip = "192.168.0.15";
 const target_IP = "192.168.0.68";
@@ -43,29 +43,41 @@ const main = async () => {
         await eebus.init();
         await ship.init();
         await spine.init();
-        
+
         await ha.init();
 
         await delay(1000);
 
-        const sub = async (
+        const sub_measurement = async (
             entity: number[],
             feature: number,
             measuementId: number,
             haSensor: Sensor) => {
-
-
             sh.readAndSubscribeMeasurement(entity, feature, measuementId, (value) => {
-                console.log(`${entity.join(", ")}, ${feature}: `, 1*value);
-                haSensor.updateState(1*value);
+                console.log(`${entity.join(", ")}, ${feature}: `, 1 * value);
+                haSensor.updateState(1 * value);
             });
+        }
+
+        const sub_setpoint = async (
+            entity: number[],
+            feature: number,
+            setpointId: number,
+            haNumber: Number) => {
+            sh.readAndSubscribeSetpoint(entity, feature, setpointId, (value) => {
+                console.log(`${entity.join(", ")}, ${feature}: `, 1 * value);
+                haNumber.setValue(1 * value);
+            });
+
+            haNumber.withCommand((j) => 
+                sh.writeSetpoint([5, 1, 1], 18, 1, j as number));
         }
 
         const device_Vaillant_0 = await ha.createDevice({
             name: "Vaillant via EEBUS",
             id: "vaillant-eebus"
         });
-        
+
         /*const device_3_Vaillant_HeatPump = await device_Vaillant_0.createDevice({
             name: "Vaillant Heat Pump",
             id: "vaillant-eebus-3.11"
@@ -96,12 +108,12 @@ const main = async () => {
         });
 
         const sensor_4_11DHW_temp = await device_Vaillant_0.createNumericSensor(
-        {
-            name: "DHW temp",
-            uniqueIdSuffix: "dhw-temp",
-            deviceClass: "temperature",
-            unitOfMeasurement: "°C"
-        });
+            {
+                name: "DHW temp",
+                uniqueIdSuffix: "dhw-temp",
+                deviceClass: "temperature",
+                unitOfMeasurement: "°C"
+            });
 
         const sensor_5_1_1_Room_temp = await device_Vaillant_0.createNumericSensor({
             name: "Room temp",
@@ -117,11 +129,20 @@ const main = async () => {
             unitOfMeasurement: "°C"
         })
 
-        await sub([3], 11, 0, sensor_3_11_HeatPump_power);
-        await sub([3, 1], 11, 9, sensor_3_1_11_Compressor_power);
-        await sub([4], 11, 0, sensor_4_11DHW_temp);
-        await sub([5, 1, 1], 11, 0, sensor_5_1_1_Room_temp);
-        await sub([6], 11, 0, sensor_6_11_Outside_temp);
+        await sub_measurement([3], 11, 0, sensor_3_11_HeatPump_power);
+        await sub_measurement([3, 1], 11, 9, sensor_3_1_11_Compressor_power);
+        await sub_measurement([4], 11, 0, sensor_4_11DHW_temp);
+        await sub_measurement([5, 1, 1], 11, 0, sensor_5_1_1_Room_temp);
+        await sub_measurement([6], 11, 0, sensor_6_11_Outside_temp);
+
+
+        const number_5_1_1_Room_temp = await device_Vaillant_0.createNumber({
+            name: "Vaillant Room temp",
+            uniqueIdSuffix: "room-temp-setpoint"
+        });
+
+        await sub_setpoint([5, 1, 1], 18, 1, number_5_1_1_Room_temp);
+
 
         //const dd = await sh.detailedDiscoveryData();
         //await sh.readAndSaveAll(dd);

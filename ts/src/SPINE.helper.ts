@@ -69,6 +69,47 @@ export class SPINEHelper {
         await this.spine.subscribe(entity, feature, processData);
     }
 
+    public async readAndSubscribeSetpoint(
+        entity: number[],
+        feature: number,
+        setpointId: number,
+        onValue: (value: number) => void) {
+
+        const processData = (p: SPINE.SetpointListData) => {
+            const value = p
+                .setpointListData
+                .setpointData
+                .find(m => m.setpointId === setpointId)
+                .value;
+
+            const numericValue = value.number * Math.pow(10, value.scale ?? 0);
+            onValue(numericValue);
+        }
+
+        
+        const result = await this.spine.readFunction<SPINE.SetpointListData>(entity, feature, "setpointListData");
+        processData(result);
+        await this.spine.subscribe(entity, feature, processData);
+    }
+
+    public async writeSetpoint(entity: number[], feature: number, setpointId: number, value: number) {
+        const result = await this.spine.sendWriteCmd(entity, feature, {
+            "setpointListData": {
+                "setpointData": [
+                    {
+                        "setpointId": setpointId,
+                        "value": {
+                            "number": value
+                        }
+                    }
+                ]
+            }
+        });
+
+        return result;
+    }
+
+
     public async detailedDiscoveryData() {
         const reply = await this.readAndSave<SPINE.NodeManagementDetailedDiscoveryData>([0], 0, "nodeManagementDetailedDiscoveryData");
         const dd = reply.nodeManagementDetailedDiscoveryData;

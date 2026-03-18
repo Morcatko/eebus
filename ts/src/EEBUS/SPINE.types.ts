@@ -48,7 +48,7 @@ export type Payload =
     | DeviceClassificationManufacturerData
     | DeviceClassificationUserData
     | MeasurementListData
-    | SetPointListData;
+    | SetpointListData;
     ;
 
 export type TValue = {
@@ -188,7 +188,7 @@ export type MeasurementListData = {
     }
 }
 
-export type SetPointListData = {
+export type SetpointListData = {
     "setpointListData": {
         "setpointData":
         {
