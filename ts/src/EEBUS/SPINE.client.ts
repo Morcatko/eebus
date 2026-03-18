@@ -95,26 +95,40 @@ export class SPINEClient {
         return msgCounter;
     }
 
-    private async sendReadCmd<TPayload = SPINE.Payload>(
+    public async sendWriteCmd(
+        entity: number[],
+        feature: number,
+        payload: SPINE.Payload) {
+            const msgId = this.sendPayload("write", entity, feature, payload);
+
+            //Set some timeout
+        return new Promise<any>((resolve, reject) => {
+            this.readReplyMap.set(msgId, (response) => {
+                resolve(response.data.payload.datagram.payload.cmd[0]);
+            });
+        });
+        }
+
+    private async sendReadCmd<TResponse = SPINE.Payload>(
         entity: number[],
         feature: number,
         payload: SPINE.Payload) {
         const msgId = this.sendPayload("read", entity, feature, payload);
 
         //Set some timeout
-        return new Promise<TPayload>((resolve, reject) => {
+        return new Promise<TResponse>((resolve, reject) => {
             this.readReplyMap.set(msgId, (response) => {
-                resolve(response.data.payload.datagram.payload.cmd[0] as TPayload);
+                resolve(response.data.payload.datagram.payload.cmd[0] as TResponse);
             });
         });
     }
 
-    public async readFunction<TPayload = SPINE.Payload>(entity: number[], feature: number, readFunction: string) {
+    public async readFunction<TResponse = SPINE.Payload>(entity: number[], feature: number, readFunction: string) {
         const _payload = {
             [readFunction]: []
         };
 
-        return await this.sendReadCmd<TPayload>(entity, feature, _payload as any as SPINE.Payload);
+        return await this.sendReadCmd<TResponse>(entity, feature, _payload as any as SPINE.Payload);
     }
 
     private async sendCallCmd(entity: number[], feature: number, payload: SPINE.Payload) {
