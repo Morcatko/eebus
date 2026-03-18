@@ -1,4 +1,5 @@
-import * as path from 'path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { mDNS } from './mDNS/mdns';
 import { EEBUSClient } from './EEBUS/EEBUS.client';
 import { SHIPClient } from './EEBUS/SHIP.client';
@@ -12,9 +13,12 @@ const cert_SN = "EEBUS-Client"; //It seems it must be Certificate CN
 const cert_FileName = "EEBUS-Client.pfx";
 const cert_SKI = "584101c651d4f960be0be2b200d8b66e1fbca3d2"
 
-const cert_Path = path.resolve(__dirname, cert_FileName);
-
-const eebus = new EEBUSClient(target_IP, target_PORT, cert_Path);
+const eebus = new EEBUSClient(target_IP, target_PORT, {
+      pfx: fs.readFileSync(path.resolve(__dirname, cert_FileName)),
+      //passphrase: '',
+      rejectUnauthorized: false, // For local dev/testing only!
+    });
+    
 const ship = new SHIPClient(eebus, cert_SN);
 const spine = new SPINEClient(eebus);
 const sh = new SPINEHelper(spine);
