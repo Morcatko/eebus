@@ -1,10 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { mDNS } from './mDNS/mdns';
-import { EEBUSClient } from './EEBUS/EEBUS.client';
-import { SHIPClient } from './EEBUS/SHIP.client';
-import { SPINEClient } from './EEBUS/SPINE.client';
-import { SPINEHelper } from './SPINE.helper';
+import { EEBUSClient, SHIPClient, SPINEClient, SPINEHelper} from './EEBUS';
 import { HAClient } from './HA/HA.client';
 import { Number, Sensor } from '@ginden/ha-mqtt-discoverable';
 
@@ -38,11 +35,11 @@ const mdns = async () => {
 }
 
 const main = async () => {
-    try {
-        await eebus.connect();
+    try {;
         await eebus.init();
         await ship.init();
         await spine.init();
+        await sh.init();
 
         await ha.init();
 
