@@ -36,6 +36,7 @@ Once your connection works check [How to use the code](/docs/usage.md)
 - [https://github.com/enbility/eebus-go](https://github.com/enbility/eebus-go) - Go implementation
 - [https://www.openmuc.org/eebus/](https://www.openmuc.org/eebus/) - Java implementation
 - [https://github.com/NIBEGroup/openeebus](https://github.com/NIBEGroup/openeebus) - C++ implementation
+- [https://github.com/markusschultheis/Vaillant-VR921] - Python implementation
 
 
 # Licensing
